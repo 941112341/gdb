@@ -3,7 +3,7 @@ package stack
 import "fmt"
 
 type Array struct {
-	len int
+	len     int
 	element []interface{}
 }
 
@@ -31,7 +31,6 @@ func (array *Array) PopFirst() interface{} {
 	return elem
 }
 
-
 func (array *Array) PopLast() interface{} {
 	if array.IsEmpty() {
 		return nil
@@ -49,7 +48,6 @@ func (array *Array) PeekFirst() interface{} {
 	return array.element[0]
 }
 
-
 func (array *Array) PeekLast() interface{} {
 	if array.IsEmpty() {
 		return nil
@@ -65,28 +63,22 @@ func (array *Array) Println() {
 	fmt.Println("%#v", array)
 }
 
+type Stack struct {
+	LinerProto
+}
 
-type Stack LinerProto
-
-type Queue LinerProto
+type Queue struct {
+	LinerProto
+}
 
 type Liner interface {
 	Pop() interface{}
 	Peek() interface{}
 	Push(data interface{})
-	Println()
 }
 
 type LinerProto struct {
 	Array Array
-}
-
-func (proto *LinerProto) Println() {
-	elem := proto.Pop()
-	for elem != nil {
-		fmt.Print(elem, "\t")
-	}
-	fmt.Println()
 }
 
 func (proto *LinerProto) Pop() interface{} {
@@ -101,8 +93,22 @@ func (proto *LinerProto) Push(data interface{}) {
 	proto.Array.PushLast(data)
 }
 
+func (Stack *Stack) Println() {
+	for i := Stack.Array.len - 1; i >= 0; i-- {
+		fmt.Print(Stack.Array.element[i], "\t")
+	}
+	fmt.Println()
+}
+
+func (Queue *Queue) Println() {
+	for _, value := range Queue.Array.element {
+		fmt.Print(value, "\t")
+	}
+	fmt.Println()
+}
+
 func (Stack *Stack) Pop() interface{} {
-	return 	Stack.Array.PopLast()
+	return Stack.Array.PopLast()
 }
 
 func (stack *Stack) Peek() interface{} {
@@ -110,9 +116,31 @@ func (stack *Stack) Peek() interface{} {
 }
 
 func (Queue *Queue) Pop() interface{} {
-	return 	Queue.Array.PopLast()
+	return Queue.Array.PopLast()
 }
 
 func (Queue *Queue) Peek() interface{} {
 	return Queue.Array.PeekLast()
+}
+
+func New(data []interface{}, x func() Liner) Liner {
+	liner := x()
+	for _, value := range data {
+		liner.Push(value)
+	}
+	return liner
+}
+
+func NewQueue(data []interface{}) *Queue {
+	proto := New(data, func() Liner {
+		return &Queue{}
+	})
+	return proto.(*Queue)
+}
+
+func NewStack(data []interface{}) *Stack {
+	proto := New(data, func() Liner {
+		return &Stack{}
+	})
+	return proto.(*Stack)
 }

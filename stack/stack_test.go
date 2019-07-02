@@ -3,5 +3,9 @@ package stack
 import "testing"
 
 func TestStack(t *testing.T) {
-	stack := New([]interface{1,2,3,4,5})
+	i := []interface{}{1, 3, 5, 7, 9}
+	queue := NewQueue(i)
+	queue.Println()
+	stack := NewStack(i)
+	stack.Println()
 }
