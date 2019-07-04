@@ -1,6 +1,6 @@
 package stack
 
-import learn "awesomeProject"
+import "learn"
 
 type MinStack struct {
 	elements   *Stack
