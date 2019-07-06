@@ -26,10 +26,28 @@ func TestBinarySearch(t *testing.T) {
 	fmt.Println(i)
 	i = BinarySearch(array, 6, 0, len(array)-1)
 	fmt.Println(i)
+	i = BinaryFind(array, 15, 0, len(array))
+	fmt.Println(i)
 }
 
 func TestSplit(t *testing.T) {
 	array := []int{3, 5, 7}
 	fmt.Println(array[:2])
 	fmt.Println(array[:0])
+}
+
+func TestBinaryFindDef(t *testing.T) {
+	array := []int{1, 2, 5, 7, 21, 44, 45, 71}
+	i := BinaryFindDef(array, 2)
+	fmt.Println(i)
+	i = BinaryFindDef(array, 4)
+	fmt.Println(i)
+	i = BinaryFindDef(array, 14)
+	fmt.Println(i)
+	i = BinaryFindDef(array, 34)
+	fmt.Println(i)
+	i = BinaryFindDef(array, 64)
+	fmt.Println(i)
+	i = BinaryFindDef(array, 88)
+	fmt.Println(i)
 }

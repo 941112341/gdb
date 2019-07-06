@@ -1,4 +1,4 @@
-package array
+package generator
 
 import "math/rand"
 
@@ -11,16 +11,20 @@ func RandomArray(n, max int) []int {
 }
 
 func IsSorted(array []int) bool {
-	if len(array) == 0 {
+	len := len(array)
+	if len == 0 || len == 1 {
 		return true
 	}
-	x := array[0]
-	for _, value := range array {
-		if value < x {
+	for i := 1; i < len; i++ {
+		if array[i-1] > array[i] {
 			return false
 		}
 	}
 	return true
 }
 
-
+func AssertSorted(array []int) {
+	if !IsSorted(array) {
+		panic("not sorted")
+	}
+}
