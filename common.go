@@ -6,6 +6,12 @@ func Swap(array []int, x, y int) {
 	array[y] = tmp
 }
 
+func SwapCom(array []Comparable, x, y int) {
+	tmp := array[x]
+	array[x] = array[y]
+	array[y] = tmp
+}
+
 func SwapPtr(x, y *int) {
 	tmp := *x
 	*x = *y

@@ -39,21 +39,13 @@ func InnerMerge(array []int) []int {
 
 func MergeFromBottom(array []int) []int {
 	length := len(array)
-	// for 代表合并个数 [2, x > length]
-	for i := 2; i < length; i *= 2 {
-		// i index out of range?
-		// j valid
-		for j := 0; j < length; j += i { // 是否收敛?
-
-			hi := j + i
-			if hi > length {
-				hi = length
-			}
-			mi := (hi + j) / 2
-			//收敛？尤其是右边缺失部分的证明逻辑比较复杂
-			//
-			tmp := arr.MergeSorted(array[j:mi], array[mi:hi])
-			arr.ArrayCopy(tmp, array, 0, j, len(tmp))
+	for x := 1; x < length; x = x * 2 {
+		// 确实收敛
+		for i := 0; i < length-x; i += 2 * x {
+			// 左半区域一定index valid
+			// 右半区域一定可取
+			sortedArray := arr.MergeSorted(array[i:i+x], array[i+x:learn.Min(length, i+2*x)]) // 如何使用条件上推?
+			arr.ArrayCopy(sortedArray, array, 0, i, len(sortedArray))
 		}
 	}
 	return array
