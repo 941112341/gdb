@@ -69,3 +69,12 @@ func MergeSorted(lArr, rArr []int) []int {
 func ArrayCopy(source, destination []int, from, to, length int) {
 	copy(destination[to:to+length], source[from:from+length])
 }
+
+func Reverse(array []int) []int {
+	length := len(array)
+	reverseArray := make([]int, length)
+	for key, value := range array {
+		reverseArray[length-1-key] = value
+	}
+	return reverseArray
+}

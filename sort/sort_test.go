@@ -50,7 +50,7 @@ func TestSlice(t *testing.T) {
 }
 
 func TestStackSort(t *testing.T) {
-	var array = generator.RandomArray(200, 100)
+	var array = generator.RandomArray(20, 100)
 	array = StackSort(array)
 	fmt.Println(array)
 	generator.AssertSorted(array)

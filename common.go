@@ -1,21 +1,15 @@
 package learn
 
 func Swap(array []int, x, y int) {
-	tmp := array[x]
-	array[x] = array[y]
-	array[y] = tmp
+	array[x], array[y] = array[y], array[x]
 }
 
 func SwapCom(array []Comparable, x, y int) {
-	tmp := array[x]
-	array[x] = array[y]
-	array[y] = tmp
+	array[x], array[y] = array[y], array[x]
 }
 
 func SwapPtr(x, y *int) {
-	tmp := *x
-	*x = *y
-	*y = tmp
+	*x, *y = *y, *x
 }
 
 func Max(x, y int) int {
