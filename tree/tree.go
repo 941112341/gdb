@@ -2,16 +2,7 @@ package tree
 
 import "learn"
 
-type Node interface {
-	Add(value learn.Comparable) *Node
-	//Del
-	Select(value learn.Comparable) int
-	Size() int
-	Max() *Node
-	Min() *Node
-	Floor() *Node
-	Ceiling() *Node
-}
+
 
 var Leaf = NewTree(nil, nil, nil)
 
