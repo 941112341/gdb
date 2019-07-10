@@ -18,3 +18,11 @@ func Cast(slice interface{}, nArrayType reflect.Type) interface{} {
 	hd.Data = uintptr(sv.Pointer())
 	return newSlice.Elem().Interface()
 }
+
+func String2Bytes(str string) []byte {
+	return *(*[]byte)(unsafe.Pointer(&str))
+}
+
+func Bytes2String(bytes []byte) string {
+	return *(*string)(unsafe.Pointer(&bytes))
+}
