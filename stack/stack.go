@@ -75,10 +75,25 @@ type Liner interface {
 	Pop() interface{}
 	Peek() interface{}
 	Push(data interface{})
+	IsEmpty() bool
+	Elements() []interface{}
+	Size() int
 }
 
 type LinerProto struct {
 	Array Array
+}
+
+func (proto *LinerProto) Size() int {
+	return proto.Array.len
+}
+
+func (proto *LinerProto) Elements() []interface{} {
+	return proto.Array.element
+}
+
+func (proto *LinerProto) IsEmpty() bool {
+	return proto.Array.len == 0
 }
 
 func (proto *LinerProto) Pop() interface{} {
