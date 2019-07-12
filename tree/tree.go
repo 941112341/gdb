@@ -2,18 +2,9 @@ package tree
 
 import "learn"
 
-
-
-var Leaf = NewTree(nil, nil, nil)
-
-type Tree struct {
-	value       learn.Comparable
-	left, right *Tree
-	count       int
-}
-
-func NewTree(value learn.Comparable, left, right *Tree) *Tree {
-	return &Tree{
-		value: value, left: left, right: right,
-	}
+// 2 - 3 树
+type Tree23 struct {
+	lval, rval       learn.Comparable // 24
+	left, mid, right *Tree23          // 24
+	parent           *Tree23          // 8
 }

@@ -2,7 +2,11 @@ package table
 
 import (
 	"learn"
+	"learn/generator"
+	"learn/reflection"
 	"learn/stack"
+	"math/rand"
+	"reflect"
 )
 
 type Table interface {
@@ -50,7 +54,7 @@ func (node *TreeNode) Height() int {
 	return learn.Max(node.right.Height(), node.left.Height()) + 1
 }
 
-func (node *TreeNode) Put(key learn.Comparable, value interface{}) (Table, interface{}) {
+func (node *TreeNode) Put(key learn.Comparable, value interface{}) (*TreeNode, interface{}) {
 	if node == nil {
 		return &TreeNode{
 			key: key, value: value,
@@ -61,19 +65,17 @@ func (node *TreeNode) Put(key learn.Comparable, value interface{}) (Table, inter
 		node.value = value
 		return node, elem
 	} else if less(node, key) {
-		table, elem := node.right.Put(key, value)
-		tableNode := table.(*TreeNode)
-		tableNode.parent, node.right = node, tableNode
-		return table, elem
+		treeNode, elem := node.right.Put(key, value)
+		treeNode.parent, node.right = node, treeNode
+		return treeNode, elem
 	} else {
-		table, elem := node.left.Put(key, value)
-		tableNode := table.(*TreeNode)
-		tableNode.parent, node.left = node, tableNode
-		return table, elem
+		treeNode, elem := node.left.Put(key, value)
+		treeNode.parent, node.left = node, treeNode
+		return treeNode, elem
 	}
 }
 
-func (node *TreeNode) PutNX(key learn.Comparable, value interface{}) (Table, bool) {
+func (node *TreeNode) PutNX(key learn.Comparable, value interface{}) (*TreeNode, bool) {
 	if node == nil {
 		return &TreeNode{
 			key: key, value: value,
@@ -82,15 +84,13 @@ func (node *TreeNode) PutNX(key learn.Comparable, value interface{}) (Table, boo
 	if equal(node, key) { // 不插入
 		return node, false
 	} else if less(node, key) {
-		table, elem := node.right.PutNX(key, value)
-		tableNode := table.(*TreeNode)
-		tableNode.parent, node.right = node, tableNode
-		return table, elem
+		treeNode, elem := node.right.PutNX(key, value)
+		treeNode.parent, node.right = node, treeNode
+		return treeNode, elem
 	} else {
-		table, elem := node.left.PutNX(key, value)
-		tableNode := table.(*TreeNode)
-		tableNode.parent, node.left = node, tableNode
-		return table, elem
+		treeNode, elem := node.left.PutNX(key, value)
+		treeNode.parent, node.left = node, treeNode
+		return treeNode, elem
 	}
 }
 
@@ -107,68 +107,18 @@ func (node *TreeNode) Get(key learn.Comparable) interface{} {
 	}
 }
 
-func (node *TreeNode) Merge(table Table) Table {
-	other := table.(*TreeNode)
-	if node == nil {
-		return other
-	} else if other == nil {
-		return node
-	}
-	if node.Height() >= table.Height() { //
-		if learn.Lte(node.key, other.key) {
-			lNode, rNode := other.left, node.right
-			node.right, other.parent = other, node
-			other.left, _ = rNode.Merge(lNode).(*TreeNode)
-			return node
-		} else {
-			lNode, rNode := node.left, other.right
-			node.left, other.parent = other, node
-			other.right, _ = rNode.Merge(lNode).(*TreeNode)
-			return node
-		}
-	} else {
-		if learn.Lte(node.key, other.key) {
-			lNode, rNode := other.left, node.right
-			other.left, node.parent = node, other
-			node.right, _ = lNode.Merge(rNode).(*TreeNode)
-			return other
-		} else {
-			lNode, rNode := node.left, other.right
-			other.right, node.parent = node, other
-			node.left, _ = lNode.Merge(rNode).(*TreeNode)
-			return other
-		}
-	}
-}
-
-func (node *TreeNode) Del(key learn.Comparable) Table {
+func (node *TreeNode) Del(key learn.Comparable) *TreeNode {
 	if node == nil {
 		return nil
 	}
-	if equal(node, key) {
-		dNode := node.left.Merge(node.right).(*TreeNode)
-		parent := node.parent
-		if parent != nil {
-			if parent.left == node {
-				parent.left = dNode
-			} else {
-				parent.right = dNode
-			}
-		}
-		dNode.parent = parent
-		return dNode
-	} else if less(node, key) {
-		nNode, ok := node.right.Del(key).(*TreeNode)
-		if ok {
-			node.right, nNode.parent = nNode, node
-		}
-		return node
+	if less(node, key) {
+		node.right = node.right.Del(key)
+	} else if greater(node, key) {
+		node.left = node.left.Del(key)
 	} else {
-		nNode, ok := node.left.Del(key).(*TreeNode)
-		if ok {
-			node.left, nNode.parent = nNode, node
+		if generator.RandBool() { // 右为根
+
 		}
-		return node
 	}
 }
 
@@ -250,16 +200,97 @@ func (node *TreeNode) Ceiling(key learn.Comparable) Table {
 func (node *TreeNode) Keys() []Table { //顺序, 使用数组完成遍历
 	s := stack.Stack{}
 	for node != nil && !s.IsEmpty() {
-
+		if node == nil {
+			node = s.Pop().(*TreeNode).right
+		} else {
+			s.Push(node)
+			node = node.left
+		}
 	}
-	return nil
+	return reflection.Cast(s.Elements(), reflect.TypeOf([]Table{})).([]Table)
 }
 
 func (node *TreeNode) Range(lk, rk learn.Comparable) []Table {
-	panic("implement me")
+	if node == nil {
+		return []Table{}
+	}
+	if less(node, lk) {
+		return node.right.Range(lk, rk)
+	} else if greater(node, rk) {
+		return node.left.Range(lk, rk)
+	} else {
+		array := []Table{node}
+		array = append(array, node.right.Range(lk, rk)...)
+		array = append(node.left.Range(lk, rk), array...)
+		return array
+	}
 }
 
 type TreeTable struct {
 	max, min, root *TreeNode
 	size           int
+}
+
+func (table *TreeTable) Put(key learn.Comparable, value interface{}) (Table, interface{}) {
+	panic("implement me")
+}
+
+func (table *TreeTable) PutNX(key learn.Comparable, value interface{}) (Table, bool) {
+	panic("implement me")
+}
+
+func (table *TreeTable) Get(key learn.Comparable) interface{} {
+	panic("implement me")
+}
+
+func (table *TreeTable) Del(key learn.Comparable) Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Exist(key learn.Comparable) bool {
+	panic("implement me")
+}
+
+func (table *TreeTable) Size() int {
+	panic("implement me")
+}
+
+func (table *TreeTable) Rank(key learn.Comparable) int {
+	panic("implement me")
+}
+
+func (table *TreeTable) Max() Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Min() Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) DelMax() Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) DelMin() Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Floor(key learn.Comparable) Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Ceiling(key learn.Comparable) Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Keys() []Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Range(lk, rk learn.Comparable) []Table {
+	panic("implement me")
+}
+
+func (table *TreeTable) Height() int {
+	panic("implement me")
 }

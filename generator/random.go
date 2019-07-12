@@ -1,9 +1,13 @@
 package generator
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 func RandomArray(n, max int) []int {
 	array := make([]int, n)
+	rand.Seed(time.Now().UnixNano())
 	for key := range array {
 		array[key] = rand.Intn(max)
 	}
@@ -27,4 +31,9 @@ func AssertSorted(array []int) {
 	if !IsSorted(array) {
 		panic("not sorted")
 	}
+}
+
+func RandBool() bool {
+	rand.Seed(time.Now().UnixNano())
+	return rand.Float32() < 0.5
 }
